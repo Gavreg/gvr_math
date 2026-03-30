@@ -19,7 +19,10 @@ class Base_Vector
 {
 
     std::array <T, N> m_data;
-public:
+private:
+
+    friend class Base_Vector;
+
     template <size_t M, typename type_of_other>
     constexpr void copy_data(size_t& offset, const Base_Vector<T,M, type_of_other>& other)
     {
@@ -32,27 +35,42 @@ public:
         m_data[offset++] = data;
     }
 
-public:
-
-    friend class Base_Vector;
-    
-    Base_Vector() :m_data{ 0 } { static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!"); };
-    
-
-    ~Base_Vector() = default;
-
     template <typename U>
-    constexpr static size_t get_size() 
+    constexpr static size_t get_size()
     {
         if constexpr (requires {U::size(); })
             return U::size();
         else
             return 1;
-	}
+    }
+
+public:
+
+    Base_Vector() :m_data{ 0 } { static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!"); };
+    
+
+    ~Base_Vector() = default;
+
+
 
     constexpr static auto size()
     {
         return N;
+    }
+
+
+    const T& operator[](size_t i) const
+    {
+        assert(i < N);
+
+        return m_data[i];
+    }
+
+    T& operator[](size_t i)
+    {
+        assert(i < N);
+
+        return m_data[i];
     }
 
     template <typename ...Args>
@@ -92,19 +110,6 @@ public:
         return __new;
     }
 
-    const T& operator[](size_t i) const
-    {
-       assert(i < N);
-
-       return m_data[i];
-    }
-
-    T& operator[](size_t i)
-    {
-        assert(i < N);
-
-        return m_data[i];
-    }
 
 
 };
