@@ -31,6 +31,68 @@ TEST(Vector, ZeroInit)
     }
 }
 
+TEST(Vector, InitFromDigits)
+{
+    {
+        Vector<int, 5> v{1, 2, 3, 4, 5};
+        EXPECT_EQ(v[0], 1);
+        EXPECT_EQ(v[1], 2);
+        EXPECT_EQ(v[2], 3);
+        EXPECT_EQ(v[3], 4);
+        EXPECT_EQ(v[4], 5);
+
+        EXPECT_EQ(v.size(), 5);
+    }
+    {
+        Vector<int, 6> v{ 1, 2, 3 };
+        EXPECT_EQ(v[0], 1);
+        EXPECT_EQ(v[1], 2);
+        EXPECT_EQ(v[2], 3);
+        EXPECT_EQ(v[3], 0);
+        EXPECT_EQ(v[4], 0);
+        EXPECT_EQ(v[5], 0);
+
+        EXPECT_EQ(v.size(), 6);
+    }
+}
+
+TEST(Vector, InitFromVectorsAndDigits)
+{
+    {
+        Vector<int, 2> v1{ 1, 2 };
+        Vector<int, 3> v2{ 3, 4 }; //  должно быть как {3, 4 , 0}
+
+        Vector<int, 5> v3{ v1,v2 };
+
+        EXPECT_EQ(v3.size(), 5);
+
+        EXPECT_EQ(v3[0], 1);
+        EXPECT_EQ(v3[1], 2);
+        EXPECT_EQ(v3[2], 3);
+        EXPECT_EQ(v3[3], 4);
+        EXPECT_EQ(v3[4], 0);
+
+    }
+
+    {
+        Vector<int, 2> v1{ 10, 12 };
+        Vector<int, 3> v2{ 20, 21, 30 };
+
+        Vector<int, 6> v3{ v1,v2, 55 };
+
+        EXPECT_EQ(v3.size(), 6);
+
+        EXPECT_EQ(v3[0], 10);
+        EXPECT_EQ(v3[1], 12);
+        EXPECT_EQ(v3[2], 20);
+        EXPECT_EQ(v3[3], 21);
+        EXPECT_EQ(v3[4], 30);
+        EXPECT_EQ(v3[5], 55);
+
+    }
+
+}
+
 TEST(Vector, Access_to_elements)
 {
     {
@@ -66,6 +128,29 @@ TEST(Vector, Sum)
         EXPECT_EQ(v3[4], 19);
         EXPECT_EQ(v3[5], 90);
         EXPECT_EQ(v3[6], 0);
+
+        EXPECT_EQ(v3.size(), 7);
+
+    }
+}
+
+TEST(Vector, Sub)
+{
+    {
+        Vector<int, 5> v1{ 21, 0,  -10, -10, 4};
+        Vector<int, 5> v2{ 7, 1000, 8,  90,  4};
+
+
+
+        auto v3 = v1 - v2;
+
+        EXPECT_EQ(v3[0], 14);
+        EXPECT_EQ(v3[1], -1000);
+        EXPECT_EQ(v3[2], -18);
+        EXPECT_EQ(v3[3], -100);
+        EXPECT_EQ(v3[4], 0);
+
+        EXPECT_EQ(v3.size(), 5);
 
     }
 }
