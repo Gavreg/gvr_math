@@ -120,6 +120,21 @@ public:
         return s;
     }
 
+    constexpr auto L2Norm()
+    {
+        using product_type = decltype (std::declval<T>() * std::declval<T>());
+        product_type s = 0;
+        for (size_t i = 0; i < N; ++i)
+        {
+            s += m_data[i] * m_data[i];
+        }
+        return sqrt(s);
+    }
+
+    constexpr auto length()
+    {
+        return L2Norm();
+    }
 };
 
 template <typename T, size_t N>
