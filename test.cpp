@@ -26,7 +26,7 @@ TEST(Vector, ZeroInit)
 {
     {
         Vector<int, 10> v1;
-        for (int i=0; i<9; ++i)
+        for (int i=0; i<10; ++i)
             EXPECT_EQ(v1[i], 0);
     }
 }
@@ -108,6 +108,34 @@ TEST(Vector, Access_to_elements)
             EXPECT_EQ(v1[i],  i);
         }
 
+    }
+
+    {
+        const Vector<int, 5> v1{ 1,2,3,4,-5 };
+        EXPECT_EQ(v1[0], 1);
+        EXPECT_EQ(v1[1], 2);
+        EXPECT_EQ(v1[2], 3);
+        EXPECT_EQ(v1[3], 4);
+        EXPECT_EQ(v1[5], -5);
+
+    }
+}
+
+
+
+TEST(Vector, copy)
+{
+    {
+        Vector<int, 5> v1 = { 1,2,30,4,5 };
+        auto v2 = v1;
+
+        EXPECT_EQ(v2[0], 1);
+        EXPECT_EQ(v2[1], 2);
+        EXPECT_EQ(v2[2], 30);
+        EXPECT_EQ(v2[3], 4);
+        EXPECT_EQ(v2[4], 5);
+
+        EXPECT_EQ(v2.size(), 5);
     }
 }
 
