@@ -202,8 +202,7 @@ TEST(Vector, L1Norm)
 
 
 TEST(Vector, L2Norm)
-{
-    
+{    
     
     {
         Vector<double, 2> v{ 2,4 };
@@ -211,15 +210,11 @@ TEST(Vector, L2Norm)
     }
 
     {
-        Vector<long double, 3> v{ 0, -8, 9 };
+        Vector<int, 3> v{ 0, -8, 9 };
         EXPECT_DOUBLE_EQ(v.L2Norm(), sqrt(-8*-8 + 9*9));
     }
 
-
-
- 
-
-
+       
 
 }
 
