@@ -110,7 +110,15 @@ public:
         return __new;
     }
 
-
+    constexpr T L1Norm()
+    {
+        T s = 0;
+        for (size_t i = 0; i < N; ++i)
+        {
+            s += abs( m_data[i]);
+        }
+        return s;
+    }
 
 };
 

@@ -116,7 +116,7 @@ TEST(Vector, Access_to_elements)
         EXPECT_EQ(v1[1], 2);
         EXPECT_EQ(v1[2], 3);
         EXPECT_EQ(v1[3], 4);
-        EXPECT_EQ(v1[5], -5);
+        EXPECT_EQ(v1[4], -5);
 
     }
 }
@@ -144,9 +144,7 @@ TEST(Vector, Sum)
     {
         Vector<int, 7> v1{ 1, 2, 3, 4, 5, 100,0 };
 		Vector<int, 7> v2{ 10,11,12,13,14 , -10, 0 };
-
         
-
 		auto v3 = v1 + v2;
 
         EXPECT_EQ(v3[0], 11);
@@ -168,8 +166,6 @@ TEST(Vector, Sub)
         Vector<int, 5> v1{ 21, 0,  -10, -10, 4};
         Vector<int, 5> v2{ 7, 1000, 8,  90,  4};
 
-
-
         auto v3 = v1 - v2;
 
         EXPECT_EQ(v3[0], 14);
@@ -179,7 +175,24 @@ TEST(Vector, Sub)
         EXPECT_EQ(v3[4], 0);
 
         EXPECT_EQ(v3.size(), 5);
+    }
+}
 
+TEST(Vector, L1Norm)
+{
+    {
+        Vector<int, 5> v1{ 1,2,3,4,5 };
+        EXPECT_EQ(v1.L1Norm(), 15);
+    }
+
+    {
+        Vector<int, 6> v1{ 1,-2,3,-4,5,10 };
+        EXPECT_EQ(v1.L1Norm(), 25);
+    }
+
+    {
+        Vector<int, 60> v1{ -8};
+        EXPECT_EQ(v1.L1Norm(), 8);
     }
 }
 
