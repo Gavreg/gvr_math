@@ -73,6 +73,13 @@ TEST(Vector, InitFromVectorsAndDigits)
         EXPECT_EQ(v3[3], 4);
         EXPECT_EQ(v3[4], 0);
 
+        Vector<double, 3> v4{1.2, 2, 3};
+        Vector <int, 3> v5{ v4  };
+
+        EXPECT_EQ(v5[0], 1);
+        EXPECT_EQ(v5[1], 2);
+        EXPECT_EQ(v5[2], 3);
+
     }
 
     {
@@ -218,4 +225,63 @@ TEST(Vector, L2Norm)
 
 }
 
+TEST(Vector, Multiply)
+{
 
+    {
+        Vector<int, 2>  v1{3,4};
+        Vector<int, 2>  v2{5,6 };
+
+        auto v3 = v2 * v1;
+
+        EXPECT_EQ(v3[0], 15);
+        EXPECT_EQ(v3[1], 24);
+       
+    }
+
+    {
+        Vector<double, 3>     v1{ 3,4,0 };
+        Vector<double, 3>  v2{ 2.5,-1.5,-55};
+
+        auto v3 = v1 * v2;
+
+        EXPECT_DOUBLE_EQ(v3[0], 7.5);
+        EXPECT_DOUBLE_EQ(v3[1], -6);
+        EXPECT_DOUBLE_EQ(v3[2], 0);
+
+    }
+    
+    {
+        Vector<int, 4> v1{1, 0, -3, 4};
+        auto v2 =  v1 * 3;
+        EXPECT_EQ(v2[0], 3);
+        EXPECT_EQ(v2[1], 0);
+        EXPECT_EQ(v2[2], -9);
+        EXPECT_EQ(v2[3], 12);
+
+    }
+
+    {
+        Vector<int, 3> v1{ 5,0,-4 };
+        auto v2 = 4 * v1;
+        EXPECT_EQ(v2[0], 20);
+        EXPECT_EQ(v2[1], 0);
+        EXPECT_EQ(v2[2], -16);
+    }
+
+
+
+}
+
+
+
+TEST(Vector3d, simpletests)
+{
+    Vector3d v1{ 1,2,3 };
+    Vector3d v2{ -4,5,6 };
+    auto v3 = v1 + v2;
+
+    EXPECT_DOUBLE_EQ(v3[0], -3);
+    EXPECT_DOUBLE_EQ(v3[1], 7);
+    EXPECT_DOUBLE_EQ(v3[2], 9);
+}

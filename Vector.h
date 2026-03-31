@@ -14,144 +14,200 @@ namespace gvr
 {
 
 
-template <typename T, size_t N, typename Derived_Vector>
-class Base_Vector
-{
-
-    std::array <T, N> m_data;
-private:
-
-    friend class Base_Vector;
-
-    template <size_t M, typename type_of_other>
-    constexpr void copy_data(size_t& offset, const Base_Vector<T,M, type_of_other>& other)
+    template <typename T, size_t N, typename Derived_Vector>
+    class Base_Vector
     {
-        for (size_t i = 0; i < other.m_data.size(); ++i)
-            m_data[offset++] = other.m_data[i];
-    }
+    protected:
+        std::array <T, N> m_data;
+    private:
 
-    constexpr void copy_data(size_t& offset, const T& data)
-    {
-        m_data[offset++] = data;
-    }
+        friend class Base_Vector;
 
-    template <typename U>
-    constexpr static size_t get_size()
+        template <size_t M, typename U, typename type_of_other>
+        constexpr void copy_data(size_t& offset, const Base_Vector<U, M, type_of_other>& other)
+        {
+            for (size_t i = 0; i < other.m_data.size(); ++i)
+                m_data[offset++] = other.m_data[i];
+        }
+
+        constexpr void copy_data(size_t& offset, const T& data)
+        {
+            m_data[offset++] = data;
+        }
+
+        template <typename U>
+        constexpr static size_t get_size()
+        {
+            if constexpr (requires {U::size(); })
+                return U::size();
+            else
+                return 1;
+        }
+
+    public:
+
+        Base_Vector() :m_data{ 0 } { static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!"); };
+
+
+        ~Base_Vector() = default;
+
+
+
+        constexpr static auto size()
+        {
+            return N;
+        }
+
+
+        const T& operator[](size_t i) const
+        {
+            assert(i < N);
+
+            return m_data[i];
+        }
+
+        T& operator[](size_t i)
+        {
+            assert(i < N);
+
+            return m_data[i];
+        }
+
+        template <typename ...Args>
+        Base_Vector(Args... args) : m_data{ 0 }
+        {
+            static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!");
+
+            constexpr size_t total_size = 0 + (get_size<Args>() + ...);
+
+            static_assert(total_size <= N, "Wrong vector size!");
+
+            size_t offset = 0;
+            (copy_data(offset, args), ...);
+        }
+
+
+        constexpr auto operator+(const Derived_Vector& other) const
+        {
+            Derived_Vector __new;
+            for (auto i = 0; i < N; ++i)
+                __new.m_data[i] = m_data[i] + other.m_data[i];
+            return __new;
+        }
+
+        constexpr auto operator-(const Derived_Vector& other) const
+        {
+            Derived_Vector __new;
+            for (auto i = 0; i < N; ++i)
+                __new.m_data[i] = m_data[i] - other.m_data[i];
+            return __new;
+        }
+
+
+
+        constexpr T L1Norm()
+        {
+            T s = 0;
+            for (size_t i = 0; i < N; ++i)
+            {
+                s += abs(m_data[i]);
+            }
+            return s;
+        }
+
+        constexpr auto L2Norm()
+        {
+            using product_type = decltype (std::declval<T>()* std::declval<T>());
+            product_type s = 0;
+            for (size_t i = 0; i < N; ++i)
+            {
+                s += m_data[i] * m_data[i];
+            }
+            return sqrt(s);
+        }
+
+        constexpr auto length()
+        {
+            return L2Norm();
+        }
+    };
+
+    template <typename T, size_t N, typename V, typename U>
+    inline V operator*(const Base_Vector<T, N, V>& vec, const U& other)
     {
-        if constexpr (requires {U::size(); })
-            return U::size();
+        V new_vec{};
+        if constexpr (std::is_same_v<U, V>)
+        {
+            for (auto i = 0; i < N; ++i)
+                new_vec[i] = vec[i] * other[i];
+        }
+
+        else if constexpr (std::is_arithmetic_v<U>)
+        {
+            for (auto i = 0; i < N; ++i)
+                new_vec[i] = vec[i] * other;
+        }
+
         else
-            return 1;
-    }
-
-public:
-
-    Base_Vector() :m_data{ 0 } { static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!"); };
-    
-
-    ~Base_Vector() = default;
-
-
-
-    constexpr static auto size()
-    {
-        return N;
-    }
-
-
-    const T& operator[](size_t i) const
-    {
-        assert(i < N);
-
-        return m_data[i];
-    }
-
-    T& operator[](size_t i)
-    {
-        assert(i < N);
-
-        return m_data[i];
-    }
-
-    template <typename ...Args>
-    Base_Vector(Args... args) : m_data{ 0 }
-    {
-        static_assert(std::is_arithmetic<T>(), "Wrong Vector Type!");
-
-        constexpr size_t total_size = 0 + (get_size<Args>() + ...);
-
-		static_assert(total_size <= N, "Wrong vector size!");
-
-        size_t offset = 0;
-        (copy_data(offset, args), ...);
-    }
-    
-    constexpr auto operator+(const Derived_Vector& other)
-    {
-        Derived_Vector __new;
-        for (auto i = 0; i < N; ++i)
-            __new.m_data[i] = m_data[i] + other.m_data[i];
-        return __new;
-    }
-
-    constexpr auto operator-(const Derived_Vector& other)
-    {
-        Derived_Vector __new;
-        for (auto i = 0; i < N; ++i)
-            __new.m_data[i] = m_data[i] - other.m_data[i];
-        return __new;
-    }
-
-    constexpr auto operator*(const Derived_Vector& other)
-    {
-        Derived_Vector __new;
-        for (auto i = 0; i < N; ++i)
-            __new.m_data[i] = m_data[i] * other.m_data[i];
-        return __new;
-    }
-
-    constexpr T L1Norm()
-    {
-        T s = 0;
-        for (size_t i = 0; i < N; ++i)
         {
-            s += abs( m_data[i]);
+            auto tmp = static_cast<V>(other);
+            new_vec = operator*(tmp);
         }
-        return s;
+        return new_vec;
     }
 
-    constexpr auto L2Norm()
+    template <typename T, size_t N, typename V, typename U>
+    inline auto operator*(const U& other, const Base_Vector<T, N, V>& vec)
+        -> std::enable_if_t<std::is_arithmetic_v<U>, V >
     {
-        using product_type = decltype (std::declval<T>() * std::declval<T>());
-        product_type s = 0;
-        for (size_t i = 0; i < N; ++i)
-        {
-            s += m_data[i] * m_data[i];
-        }
-        return sqrt(s);
+        return vec * other;
     }
 
-    constexpr auto length()
+
+    template <typename T, size_t N>
+    class Vector : public Base_Vector<  T, N, Vector<T, N>   >
     {
-        return L2Norm();
-    }
-};
+        using this_vector = Vector<T, N>;
+    public:
+        Vector() : Base_Vector<T, N, this_vector>() {};
 
-template <typename T, size_t N>
-class Vector : public Base_Vector<  T, N, Vector<T,N>   >
-{
-	using this_vector = Vector<T, N>;
-public:
-	Vector() : Base_Vector<T, N, this_vector>() {};
-    
-	template <typename ...Args>
-	Vector(Args... args) : Base_Vector<T, N, this_vector >(args...) {};
+        template <typename ...Args>
+        Vector(Args... args) : Base_Vector<T, N, this_vector >(args...) {};
 
 
-};
+
+    };
+
+    class Vector3d : public Base_Vector<  double, 3, Vector3d   >
+    {
+        using this_vector = Vector3d;
+        using vector_type = double;
+    public:
+        Vector3d() : Base_Vector<vector_type, 3, this_vector>() {};
+
+        template <typename ...Args>
+        Vector3d(Args... args) : Base_Vector<vector_type, 3, this_vector >(args...) {};
+
+    };
+
+    class Vector4d : public Base_Vector<  double, 4, Vector3d   >
+    {
+        using this_vector = Vector3d;
+        using vector_type = double;
+    public:
+        Vector4d() : Base_Vector<vector_type, 4, this_vector>() {};
+
+        template <typename ...Args>
+        Vector4d(Args... args) : Base_Vector<vector_type, 4, this_vector >(args...) {};
+
+    };
 
 }
 
+
+
+
+/*
 // Вектор с операциями суммы, скалярного умножения и векторного умножения
 class Vector3
 {
@@ -366,3 +422,5 @@ template <typename T> Vector3 operator/(T arg, const Vector3& v)
 {
     return Vector3(v.coords[0] / arg, v.coords[1] / arg, v.coords[2] / arg);
 }
+
+*/
