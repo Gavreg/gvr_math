@@ -205,9 +205,6 @@ TEST(Vector, L1Norm)
 }
 
 
-
-
-
 TEST(Vector, L2Norm)
 {    
     
