@@ -21,18 +21,16 @@ namespace gvr
         std::array <T, N> m_data;
     private:
 
-        friend class Base_Vector;
-
         template <size_t M, typename U, typename type_of_other>
         constexpr void copy_data(size_t& offset, const Base_Vector<U, M, type_of_other>& other)
         {
-            for (size_t i = 0; i < other.m_data.size(); ++i)
-                m_data[offset++] = other.m_data[i];
+            for (size_t i = 0; i < other.size(); ++i)
+                operator[](offset++) = other[i];
         }
 
         constexpr void copy_data(size_t& offset, const T& data)
         {
-            m_data[offset++] = data;
+            operator[](offset++) = data;
         }
 
         template <typename U>
@@ -89,18 +87,18 @@ namespace gvr
 
         constexpr auto operator+(const Derived_Vector& other) const
         {
-            Derived_Vector __new;
+            Derived_Vector NewVec{*this};
             for (auto i = 0; i < N; ++i)
-                __new.m_data[i] = m_data[i] + other.m_data[i];
-            return __new;
+                NewVec[i] += other[i];
+            return NewVec;
         }
 
         constexpr auto operator-(const Derived_Vector& other) const
         {
-            Derived_Vector __new;
+            Derived_Vector NewVec{ *this };
             for (auto i = 0; i < N; ++i)
-                __new.m_data[i] = m_data[i] - other.m_data[i];
-            return __new;
+                NewVec[i] -= other.m_data[i];
+            return NewVec;
         }
 
 

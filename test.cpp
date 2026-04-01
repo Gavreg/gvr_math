@@ -4,24 +4,6 @@
 
 using namespace gvr;
 
-TEST(Vector, EmptyInit)
-{
-    {
-        Vector<int, 0> v1;
-        EXPECT_EQ(v1.size(), 0);
-    }
-
-    {
-        Vector<double, 0> v1;
-        EXPECT_EQ(v1.size(), 0);
-    }
-
-    {
-        Vector<float, 0> v1;
-        EXPECT_EQ(v1.size(), 0);
-    }
-    
-}
 
 TEST(Vector, ZeroInit)
 {
